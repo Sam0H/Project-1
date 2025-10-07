@@ -8,29 +8,16 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-
+#STEP 1
 data = pd.read_csv("data/Project_1_Data.csv")
 
-# #drop rows with no data
-# #data = data.dropna().reset_index(drop=True)
-
-# # Quick look at the data 
-# print("First 5 rows of the dataset:") 
-# print(data.head())
-# print("\nDataset info:")
-# print(data.info())
-# print("\nSummary statistics:")
-# print(data.describe())
-# # Check for missing values
-# print("\nMissing values per column:")
-# print(data.isnull().sum())
-
-# Histograms for each variable
+#STEP 2
+#histograms for each variable
 data.hist(bins=30, figsize=(10, 6))
 plt.suptitle("Histograms of Features", fontsize=14)
 plt.show()
 
-# Scatter plot of X vs Y, colored by Step
+#scatter plot of X vs Y, colored by Step
 plt.figure(figsize=(8, 6))
 scatter = plt.scatter(data["X"], data["Y"], c=data["Step"], cmap="viridis", alpha=0.7)
 plt.colorbar(scatter, label="Step")
@@ -39,7 +26,7 @@ plt.ylabel("Y")
 plt.title("Scatter plot of X vs Y by Step")
 plt.show()
 
-# Scatter plot of X vs Z, colored by Step
+#scatter plot of X vs Z, colored by Step
 plt.figure(figsize=(8, 6))
 scatter = plt.scatter(data["X"], data["Z"], c=data["Step"], cmap="plasma", alpha=0.7)
 plt.colorbar(scatter, label="Step")
@@ -48,7 +35,7 @@ plt.ylabel("Z")
 plt.title("Scatter plot of X vs Z by Step")
 plt.show()
 
-# Scatter plot of Y vs Z, colored by Step
+#scatter plot of Y vs Z, colored by Step
 plt.figure(figsize=(8, 6))
 scatter = plt.scatter(data["Y"], data["Z"], c=data["Step"], cmap="coolwarm", alpha=0.7)
 plt.colorbar(scatter, label="Step")
@@ -58,10 +45,7 @@ plt.title("Scatter plot of Y vs Z by Step")
 plt.show()
 
 
-
-
-
-
+#STEP 3
 # Compute Pearson correlation
 corr_matrix = data.corr(method="pearson")
 print("\nCorrelation matrix:")
@@ -73,10 +57,7 @@ sns.heatmap(corr_matrix, annot=True, cmap="coolwarm", fmt=".2f", cbar=True)
 plt.title("Correlation Heatmap of Features")
 plt.show()
 
-
-
-
-
+#STEP 4
 from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
@@ -168,9 +149,7 @@ print("Test Accuracy:", random_search_gb.score(X_test, y_test))
 
 
 
-# =========================
-# ~~~~~~~~~Step 5~~~~~~~~~~
-# =========================
+#STEP 5
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report, confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
