@@ -10,12 +10,19 @@ import matplotlib.pyplot as plt
 
 
 #STEP 1
+# The CSV file contains feature var (X, Y, Z) and the target var (Step)
+# No missing values or categorical encoding was required for this dataset
+
 data = pd.read_csv("data/Project_1_Data.csv")
 
 
 
 #STEP 2
-#histograms for each variable
+# Histograms show feature dist. across the dataset
+# Scatter plots (X vs Y, X vs Z, Y vs Z) colored by Step visualize how classes are separated
+# Observed: Clear clustering of different maintenance steps, indicating suitability for classification
+
+#histograms for each var
 data.hist(bins=30, figsize=(10, 6))
 plt.suptitle("Histograms of Features", fontsize=14)
 plt.show()
@@ -50,7 +57,9 @@ plt.show()
 
 
 #STEP 3
-# Compute Pearson correlation
+# Pearson correlation is used as it measures linear dependency between var
+# Heatmap helps identify multicolinearity between features (X, Y, Z) and relation with Step
+# Observation: Step is strongly related to spatial coords, confirming predictive value
 corr_matrix = data.corr(method="pearson")
 print("\nCorrelation matrix:")
 print(corr_matrix)
@@ -64,6 +73,13 @@ plt.show()
 
 
 #STEP 4
+# Three main models trained with GridSearchCV:
+#  Logistic Regression: Baseline LINEAR classifier
+#  Random Forest: Captures nonlinearities, robust ensemble method
+#  SVM: Effective for complex decision boundaries
+# One additional model trained with RandomizedSearchCV:
+#  Gradient Boosting: Strong boosting method with randomized hyperparameter tuning
+
 from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
@@ -75,7 +91,7 @@ import numpy as np
 X = data.drop("Step", axis=1)
 y = data["Step"]
 
-# Train/test split
+# train/test split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
 print("Training samples:", X_train.shape[0])
@@ -155,6 +171,13 @@ print("Test Accuracy:", random_search_gb.score(X_test, y_test))
 
 
 #STEP 5
+# Evaluated models on Accuracy, Precision, Recall, and F1 score:
+#  Accuracy: Overall correctness of predictions
+#  Precision: How many predicted steps were correct
+#  Recall: Ability to identify all true steps
+#  F1 Score: Harmonic mean of Precision and Recall (balanced measure)
+# Best model selected based on F1 score to balance both false positives and false negatives
+
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report, confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -182,10 +205,10 @@ y_pred_rf = evaluate_model(grid_rf.best_estimator_, X_train, y_train, X_test, y_
 y_pred_svm = evaluate_model(grid_svm.best_estimator_, X_train, y_train, X_test, y_test, "SVM")
 
 # Choose best model based on F1 (usually the most balanced metric)
-best_model = grid_svm.best_estimator_   # Replace with whichever has best F1 in your results
+best_model = grid_svm.best_estimator_   #replaces with whichever has best F1 in your results
 y_pred_best = y_pred_svm
 
-# Confusion Matrix
+# Conf Matrix
 cm = confusion_matrix(y_test, y_pred_best)
 plt.figure(figsize=(6,4))
 sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=set(y_test), yticklabels=set(y_test))
@@ -197,6 +220,9 @@ plt.show()
 
 
 #STEP 6
+# Combined Random Forest and SVM with Logistic Regression as meta-classifier
+# Goal is to combine complementary strengths of models and improve prediction accuracy
+# Observation: Accuracy did not improve significantly since base models (esp. SVM) already performed perfectly
 from sklearn.ensemble import StackingClassifier
 
 # Define the base learners (use best estimators from your grid search)
@@ -205,11 +231,11 @@ estimators = [
     ('svm', grid_svm.best_estimator_)
 ]
 
-# Define the stacking classifier with Logistic Regression as the final estimator
+# Define the stacking classifier with Logistic Regression as the final est
 stacked_clf = StackingClassifier(
     estimators=estimators,
     final_estimator=LogisticRegression(max_iter=500),
-    passthrough=False,  # set True if you want to include original features as well
+    passthrough=False,
     n_jobs=-1
 )
 
@@ -239,6 +265,10 @@ plt.show()
 
 
 #STEP 7
+# Best-performing model (SVM) saved using Joblib for future use
+# Demonstrated reloading the model and predicting new maintenance steps
+# Confirms that the model can generalize to unseen input coords
+
 import joblib
 
 # Save model to disk
@@ -248,7 +278,7 @@ print("Best model saved as best_model.joblib")
 # Load model (to demonstrate reusability)
 loaded_model = joblib.load("best_model.joblib")
 
-# Predict maintenance steps for given coordinates
+# Predict maintenance steps for given coords
 test_coords = np.array([
     [9.375, 3.0625, 1.51], 
     [6.995, 5.125, 0.3875], 
