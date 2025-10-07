@@ -8,8 +8,11 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
+
 #STEP 1
 data = pd.read_csv("data/Project_1_Data.csv")
+
+
 
 #STEP 2
 #histograms for each variable
@@ -45,6 +48,7 @@ plt.title("Scatter plot of Y vs Z by Step")
 plt.show()
 
 
+
 #STEP 3
 # Compute Pearson correlation
 corr_matrix = data.corr(method="pearson")
@@ -56,6 +60,8 @@ plt.figure(figsize=(8, 6))
 sns.heatmap(corr_matrix, annot=True, cmap="coolwarm", fmt=".2f", cbar=True)
 plt.title("Correlation Heatmap of Features")
 plt.show()
+
+
 
 #STEP 4
 from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV
@@ -148,7 +154,6 @@ print("Test Accuracy:", random_search_gb.score(X_test, y_test))
 
 
 
-
 #STEP 5
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report, confusion_matrix
 import seaborn as sns
@@ -190,9 +195,8 @@ plt.title("Confusion Matrix - Best Model")
 plt.show()
 
 
-# ==========================
-# Step 6: Stacked Model Performance Analysis
-# ==========================
+
+#STEP 6
 from sklearn.ensemble import StackingClassifier
 
 # Define the base learners (use best estimators from your grid search)
@@ -234,10 +238,7 @@ plt.show()
 
 
 
-# =============================
-# Step 7: Model Evaluation
-# =============================
-
+#STEP 7
 import joblib
 
 # Save model to disk
